@@ -9,6 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddImageGo(this IServiceCollection services)
         {
+            
             return services.AddMemoryCache();
         }
 

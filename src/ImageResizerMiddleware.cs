@@ -113,6 +113,11 @@ namespace ImageGo.AspNetCore
                 return;
             }
 
+            if(HasEtagMatch(context))
+            {
+                return;
+            }
+
             var imageData = GetImageData(imagePath, resizeParams, lastWriteTimeUtc);
 
             // write to stream
@@ -126,6 +131,29 @@ namespace ImageGo.AspNetCore
             // cleanup
             imageData.Dispose();
 
+        }
+
+        private bool HasEtagMatch(HttpContext context)
+        {
+            bool is304 =false;
+            if (context.Request.Method == "GET")
+            {
+                if (_statusCodes.Contains(context.Response.StatusCode))
+                {
+                    //I just serialize the result to JSON, could do something less costly
+
+                    var etag = context.Request.Headers["If-None-Match"].ToString();
+                
+                    if (context.Request.Headers.Keys.Contains("If-None-Match") && !string.IsNullOrEmpty(etag))
+                    {
+                        context.Response.StatusCode = 304;
+                        is304 = true;
+                        context.Response.Headers.Add("ETag", new[] { etag });
+                    }
+                }
+            }
+
+            return is304;
         }
 
         public bool AddETag(HttpContext context,int size)
