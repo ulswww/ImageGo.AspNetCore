@@ -149,6 +149,8 @@ namespace ImageGo.AspNetCore
                         context.Response.StatusCode = 304;
                         is304 = true;
                         context.Response.Headers.Add("ETag", new[] { etag });
+                        context.Response.Headers.Add("U-O", new string[0]);
+                        Console.WriteLine($"If-None-Match {etag}");
                     }
                 }
             }
